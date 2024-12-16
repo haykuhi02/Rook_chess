@@ -10,7 +10,7 @@ const ChessBoard: React.FC = () => {
   const [rookPosition, setRookPosition] = useState<Position>({ row: 6, col: 6 });
   const [possibleMoves, setPossibleMoves] = useState<Position[]>([]);
   const [moveCount, setMoveCount] = useState<number>(0);
-  const [moveHistory, setMoveHistory] = useState<string[]>([]);
+  const [moveHistory, setMoveHistory] = useState<string[]>(["G2"]);
   const squareSize = 60;
   const [timer, setTimer] = useState<number>(0);
   const [isTimerActive, setIsTimerActive] = useState<boolean>(false);
@@ -71,16 +71,24 @@ const ChessBoard: React.FC = () => {
   };
 
   const undoMove = () => {
-    if (moveHistory.length > 0) {
-      const lastMove = moveHistory[moveHistory.length - 1];
-      const [col, row] = lastMove.split('');
-      const prevRow = 8 - parseInt(row);
-      const prevCol = col.charCodeAt(0) - 65;
-      setRookPosition({ row: prevRow, col: prevCol });
-      setMoveHistory((prevHistory) => prevHistory.slice(0, prevHistory.length - 1));
-      setMoveCount((prevCount) => prevCount - 1);
+    if (moveHistory.length > 1) { 
+      const lastMove = moveHistory[moveHistory.length - 2]; 
+      console.log("Undoing move:", lastMove);
+  
+      
+      const prCol = lastMove.charCodeAt(0) - 65; 
+      const prRow = 8 - parseInt(lastMove[1]);   
+  
+      
+      setRookPosition({ row: prRow, col: prCol });
+      setMoveHistory((prevHistory) => prevHistory.slice(0, -1)); 
+      setMoveCount((prevCount) => Math.max(0, prevCount - 1));  
+      setPossibleMoves([]); // Clear possible moves
+    } else {
+      console.log("No moves back");
     }
   };
+  
 
   return (
     <View style={styles.board}>
